@@ -4,22 +4,27 @@ use regex::Regex;
 
 fn main() {
     let input = fs::read_to_string("02.txt").unwrap();
-    println!("part 1 result: {}",getResult(&input));
+    let (result1, result2) = getResult(&input);
+    println!("Sum: {}, part2: {}", result1, result2);
     
 }
 
-fn getResult(input: &String) -> u32 {
+fn getResult(input: &String) -> (u32, u32) {
     let mut games: Vec<u32> = Vec::new();
+    let mut powers: Vec<u32> = Vec::new();
     for (line_number, input_line) in input.lines().enumerate() {
-        if lineIsOk(&input_line) {
+        let (isOk, power) = lineIsOk(&input_line);
+        if isOk {
             games.push((line_number as u32)+1);
         }
+        powers.push(power);
     }
     let sum: u32 = games.iter().sum();
-    sum    
+    let power: u32 = powers.iter().sum();
+    (sum, power)    
 }
 
-fn lineIsOk(line: &str) -> bool {
+fn lineIsOk(line: &str) -> (bool, u32) {
     let re = Regex::new(r"(\d+) (red|green|blue)").unwrap();
     let mut max_red = 0;
     let mut max_green = 0;
@@ -48,5 +53,6 @@ fn lineIsOk(line: &str) -> bool {
         }
     }
 
-    max_red <= 12 && max_green <= 13 && max_blue <= 14
+    (max_red <= 12 && max_green <= 13 && max_blue <= 14,
+    max_red * max_green * max_blue)
 }
